@@ -1,11 +1,11 @@
 import socket
 import threading
-import sys
 
 # Constants
 HEADER_LENGTH = 10
-IP = "192.168.43.165"  # Server IP Address (update with the correct server IP)
+IP = "192.168.13.182"  # Server IP Address
 PORT = 5555
+
 client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client_socket.connect((IP, PORT))
 
@@ -21,17 +21,13 @@ client_socket.send(username_header + username)
 def receive_messages():
     while True:
         try:
-            # Receive the message header
             message_header = client_socket.recv(HEADER_LENGTH)
             if not len(message_header):
+                print("Connection closed by the server")
                 break
-
-            # Get the message length and then the actual message
             message_length = int(message_header.decode('utf-8').strip())
             message = client_socket.recv(message_length).decode('utf-8')
-
-            print(f"\nNew message: {message}")
-
+            print(f"\n{message}")
         except Exception as e:
             print(f"Error receiving message: {e}")
             break
@@ -45,10 +41,6 @@ def send_message():
             message_header = f"{len(message):<{HEADER_LENGTH}}".encode('utf-8')
             client_socket.send(message_header + message)
 
-if __name__ == "__main__":
-    # Start receiving messages in a separate thread
-    receive_thread = threading.Thread(target=receive_messages)
-    receive_thread.start()
-
-    # Start sending messages
+if _name_ == "_main_":
+    threading.Thread(target=receive_messages).start()
     send_message()
